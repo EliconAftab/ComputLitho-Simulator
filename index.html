@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComputLitho Simulator</title>
+    <link rel="stylesheet" href="/static/styles1.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        .selected {
+            background-color: rgb(35, 241, 138) !important;
+            color: white !important;
+        }
+
+        #selected-values {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #selected-values li {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .layer_display-item {
+            height: 5%;
+            width: 100%;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <div class="container1" id="box1">
+        <div id="navbar">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">File</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Edit</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">View</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">OPC</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Simulator</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Help</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="container2" id="box2">
+        <div class="container21">
+            <div class="container211">
+                <div class="container2111">
+                    <div class="container21111">Browse a File to Upload</div>
+                    <div class="container21112">
+                        <div class="container211121">
+                            <div class="container2111211">
+                                <input type="file" id="file-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container21113">
+                        <button type="button" class="btn btn-primary mt-3" id="generate-gds-button"
+                            onclick="view_GDS()">Execute Script
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container212" style="color: white;">
+                <div class="container2121">
+                    <div class="container21211">Aerial</div>
+                    <div class="container21212">Resist Image</div>
+                </div>
+                <div class="container2122">
+                    <div class="container21221">Simulate Aerial Image</div>
+                    <div class="container21222">
+                        <div class="container212221"><input type="text" placeholder="wavelength (um)" id="wavelength">
+                        </div>
+                        <div class="container212222"><input type="text" placeholder="Numerical Apperture" id="NA"></div>
+                        <div class="container212223"><input type="text" placeholder="Layer Name" id="fftlayer"></div>
+                        <div class="container212224"><input type="text" placeholder="Layer Datatype" id="fftdatatype">
+                        </div>
+                    </div>
+                    <div class="container21223">
+                        <div class="container212231"><button onclick="processGDS()">Run Script</button>
+                        </div>
+                        <div class="container212232"><button onclick="showGDS()">View</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container213">
+                <div class="container2131">
+                    <div class="container21311">Fragmentation</div>
+                    <div class="container21312">Rule Based OPC Image</div>
+                </div>
+                <div class="container2132">
+                    <div class="container21321">Simulate Fragmentation Image</div>
+                    <div class="container21322">
+                        <div class="container213221"><input type="text" placeholder="Minimum Length (um)"></div>
+                        <div class="container213222"><input type="text" placeholder="Number of Bisections"></div>
+                    </div>
+                    <div class="container21323">Length of Corner Fragments</div>
+                    <div class="container21324">
+                        <div class="container213241"><input type="text" placeholder="Along x-axis"></div>
+                        <div class="container213242"><input type="text" placeholder="Along y-axis"></div>
+                    </div>
+                    <div class="container21325">
+                        <div class="container213251">
+                            <button>Run Script</button>
+                        </div>
+                        <div class="container213252">
+                            <button>View Script</button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="container214">
+
+            </div>
+            <div class="container215"></div>
+        </div>
+        <div class="container22">
+            <div class="navbar2">
+                <div class="imageshow"><button class="btn btn-primary mt-3" onclick="hideGDS()">IMAGE</a></div>
+                <div class="gdsshow"><button class="btn btn-primary mt-3" onclick="hideImage()">GDS FILE</a></div>
+            </div>
+            <div class="fileshow" id="fileshow">
+                <div class="displayimage" id="displayimage">
+                    <div class="displaysvg" id="svg-display"></div>
+                    <div class="displayimages" id="displayimages">
+                        <div class="image1" id="original">
+                            <!-- <img id="original_mask" src="" alt="Mask image" style="display: none;"> -->
+
+                        </div>
+                        <div class="image2" id="fft1">
+                            <!-- <img id="fft_mask" src="" alt="Fourier Transform Mask"
+                                style="height: 200px; width: 200px;display: none;"> -->
+
+                        </div>
+                        <div class="image3" id="aerial">
+                            <!-- <img id="aerial_image" src="" alt="Inverse Fourier Transform"
+                                style="height: 200px; width: 200px;display: none;"> -->
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="displaymyimage" id="displaymyimage"></div>
+                <div class="maindiv">
+                    <div class="displaylayer" id="layer_display"></div>
+                </div>
+
+            </div>
+        </div>
+        <div class="container23">
+            <div class="container231">
+                <input type="text" height="100%" width="100%" style="background-color: black; color: white;" placeholder="path to be displayed here">
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+        integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+        crossorigin="anonymous"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const filePreview = document.getElementById('file-preview');
+        const svgDisplay = document.getElementById('svg-display');
+        const displaylayer = document.getElementById('layer_display');
+        const displaysvg = document.getElementById('svg-display');
+        const displaydb = document.querySelector('.container214');
+
+        fileInput.addEventListener('change', async (event) => {
+            document.getElementById('displayimages').classList.add('hidden');
+            const file = event.target.files[0];
+
+            if (!file) {
+                filePreview.textContent = 'No file selected.';
+                return;
+            }
+
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const validGdsExtensions = ['gds', 'gds2'];
+
+            if (validGdsExtensions.includes(fileExtension)) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        // Hide the original image display and show the SVG display container
+                        document.getElementById('displayimages').classList.add('hidden');
+                        svgDisplay.classList.remove('hidden');
+
+                        const data = await response.json();
+                        const svgUrl = data.svg_url;
+
+                        // Fetch the SVG text if needed
+                        const svgResponse = await fetch(svgUrl);
+                        const svgText = await svgResponse.text();
+
+                        // Clear any previous layer content
+                        displaylayer.innerHTML = '';
+
+                        // Process layers and datatypes
+                        const layeranddatatype = data.layers_and_datatypes;
+                        const name_array = data.name_array;
+                        const job_array = data.job_array;
+                        const user_array = data.user_array;
+                        const time_array = data.time_array;
+
+                        for (let i = 0; i < name_array.length; i++) {
+                            const recordDiv = document.createElement('div');
+                            recordDiv.className = 'dbdisp';
+                            recordDiv.id = 'dbdisp_1';
+                            recordDiv.innerHTML = `
+        <strong>Name:</strong> ${name_array[i]} <br>
+        <strong>Job ID:</strong> ${job_array[i]} <br>
+        <strong>User ID:</strong> ${user_array[i]} <br>
+        <strong>Timestamp:</strong> ${time_array[i]} <br><br>
+    `;
+                            displaydb.appendChild(recordDiv);
+                        }
+
+                        // Insert an image element (used as a source) into the svgDisplay container.
+                        // This image is hidden, as we'll draw it onto a canvas.
+                        svgDisplay.innerHTML = `<img src="${svgUrl}" alt="Generated SVG" id="svgfile" style="display:none;">`;
+
+                        // Create a div for the reset button
+                        const button_div = document.createElement('div');
+                        button_div.className = "button_div";
+                        button_div.id = "button_div";
+                        button_div.innerHTML = `<button id="resetButton">Reset Zoom</button>`;
+                        svgDisplay.appendChild(button_div);
+
+                        // Create and append a canvas for zooming/selection
+                        const canvas = document.createElement('canvas');
+                        canvas.id = 'canvas';
+                        svgDisplay.appendChild(canvas);
+
+                        // Get reference to the hidden image and setup canvas context
+                        const img = document.getElementById('svgfile');
+                        const ctx = canvas.getContext('2d');
+
+                        // Variables to track the current view (source rectangle)
+                        let srcX = 0, srcY = 0, srcWidth, srcHeight;
+
+                        // When the image loads, set up canvas dimensions and draw the image
+                        img.onload = function () {
+                            // Get the container dimensions
+                            const containerHeight = svgDisplay.clientHeight;
+
+                            // Set image height to 90% of container height
+                            const imgHeight = containerHeight * 0.9;
+
+                            // Calculate the width based on the image's natural aspect ratio
+                            const aspectRatio = img.naturalWidth / img.naturalHeight;
+                            const imgWidth = imgHeight * aspectRatio;
+
+                            // Ensure the width is 90% of the height (if needed)
+                            const targetWidth = imgHeight * 0.9;
+                            if (imgWidth > targetWidth) {
+                                // If the calculated width exceeds 90% of height, adjust height instead
+                                const adjustedHeight = targetWidth / aspectRatio;
+                                canvas.width = targetWidth;
+                                canvas.height = adjustedHeight;
+                            } else {
+                                // Otherwise, use the calculated width and height
+                                canvas.width = imgWidth;
+                                canvas.height = imgHeight;
+                            }
+
+                            // Set source dimensions to the natural size of the image
+                            srcWidth = img.naturalWidth;
+                            srcHeight = img.naturalHeight;
+
+                            // Apply styles to the canvas
+                            canvas.style.width = `${canvas.width}px`;
+                            canvas.style.height = `${canvas.height}px`;
+
+                            // Center the canvas horizontally
+                            canvas.style.marginLeft = `${(svgDisplay.clientWidth - canvas.width) / 2}px`;
+
+                            // Draw the initial view
+                            drawCurrentView();
+                        };
+
+                        // Function to draw the current view onto the canvas
+                        function drawCurrentView() {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, canvas.width, canvas.height);
+                        }
+
+                        // Variables for selection coordinates and dragging state
+                        let startX, startY;
+                        let isDragging = false;
+
+                        // Helper to get mouse position relative to canvas
+                        function getMousePos(e) {
+                            const rect = canvas.getBoundingClientRect();
+                            return {
+                                x: e.clientX - rect.left,
+                                y: e.clientY - rect.top
+                            };
+                        }
+
+                        // Mouse events for selection and zoom
+                        canvas.addEventListener('mousedown', function (e) {
+                            const pos = getMousePos(e);
+                            startX = pos.x;
+                            startY = pos.y;
+                            isDragging = true;
+                        });
+
+                        canvas.addEventListener('mousemove', function (e) {
+                            if (!isDragging) return;
+                            const pos = getMousePos(e);
+                            // Redraw current view and show the selection rectangle
+                            drawCurrentView();
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'red';
+                            ctx.lineWidth = 2;
+                            const width = pos.x - startX;
+                            const height = pos.y - startY;
+                            ctx.rect(startX, startY, width, height);
+                            ctx.stroke();
+                        });
+                        let isAltKeyPressed = false;
+
+                        // Listen for Alt key press and release
+                        document.addEventListener('keydown', (e) => {
+                            if (e.key === 'Alt') {
+                                isAltKeyPressed = true;
+                            }
+                        });
+
+                        document.addEventListener('keyup', (e) => {
+                            if (e.key === 'Alt') {
+                                isAltKeyPressed = false;
+                            }
+                        });
+
+                        canvas.addEventListener('mouseup', function (e) {
+                            if (!isDragging) return;
+                            isDragging = false;
+                            const pos = getMousePos(e);
+                            // Calculate selection in canvas coordinates
+                            const selX = Math.min(startX, pos.x);
+                            const selY = Math.min(startY, pos.y);
+                            const selWidth = Math.abs(pos.x - startX);
+                            const selHeight = Math.abs(pos.y - startY);
+
+                            if (selWidth && selHeight) {
+                                // Map the selection rectangle to the currently displayed image portion (source rectangle)
+                                const ratioX = selX / canvas.width;
+                                const ratioY = selY / canvas.height;
+                                const ratioWidth = selWidth / canvas.width;
+                                const ratioHeight = selHeight / canvas.height;
+                                if (isAltKeyPressed) {
+                                    // Zoom out when Alt key is pressed
+                                    const zoomOutFactor = 2; // Zoom out by a factor of 2
+                                    srcX = srcX - (ratioX * srcWidth * zoomOutFactor);
+                                    srcY = srcY - (ratioY * srcHeight * zoomOutFactor);
+                                    srcWidth = srcWidth * zoomOutFactor;
+                                    srcHeight = srcHeight * zoomOutFactor;
+
+                                    // Ensure we don't zoom out beyond the original image size
+                                    srcX = Math.max(0, srcX);
+                                    srcY = Math.max(0, srcY);
+                                    srcWidth = Math.min(img.naturalWidth, srcWidth);
+                                    srcHeight = Math.min(img.naturalHeight, srcHeight);
+                                }
+                                else {
+                                    srcX = srcX + ratioX * srcWidth;
+                                    srcY = srcY + ratioY * srcHeight;
+                                    srcWidth = srcWidth * ratioWidth;
+                                    srcHeight = srcHeight * ratioHeight;
+                                }
+
+                                // Calculate new source rectangle relative to the original image
+
+
+                                drawCurrentView();
+                            }
+                        });
+
+                        canvas.addEventListener('mouseleave', function () {
+                            if (isDragging) {
+                                isDragging = false;
+                                drawCurrentView();
+                            }
+                        });
+
+                        // Reset the zoom to the original full image
+                        const resetButton = document.getElementById('resetButton');
+                        resetButton.addEventListener('click', function () {
+                            srcX = 0;
+                            srcY = 0;
+                            srcWidth = img.naturalWidth;
+                            srcHeight = img.naturalHeight;
+                            drawCurrentView();
+                        });
+                        // Display layer controls
+                        const layername = document.createElement("p");
+                        layername.innerHTML = `<b style="color: white;">Layers</b>`;
+                        displaylayer.appendChild(layername);
+
+                        layeranddatatype.forEach(([layer, datatype]) => {
+                            const div = document.createElement("div");
+                            div.className = "layer_display-item";
+                            div.innerHTML = `
+                <div class="buttondisp">
+                  <button>${layer}/${datatype}</button>
+                </div>
+                <div class="fillpatterndisp">
+                  <select class="fill-pattern">
+                    <option value="none">None</option>
+                    <option value="hatch">Hatch</option>
+                    <option value="crosshatch">Crosshatch</option>
+                    <option value="dots">Dots</option>
+                  </select>
+                  <input class="select-color" type="color" value="#000000">
+                </div>
+              `;
+                            displaylayer.appendChild(div);
+
+                            // Get references to the controls
+                            const button = div.querySelector("button");
+                            const select = div.querySelector(".fill-pattern");
+                            const colorInput = div.querySelector(".select-color");
+
+                            // Function to send data to the backend
+                            const sendData = () => {
+                                const selectedPattern = select.value;
+                                const selectedColor = colorInput.value;
+
+                                const dataToSend = {
+                                    layer: layer,
+                                    datatype: datatype,
+                                    fillPattern: selectedPattern,
+                                    color: selectedColor
+                                };
+
+                                fetch("/add_to_array", {
+                                    method: "POST",
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(dataToSend)
+                                })
+                                    .then(response => response.json())
+                                    .then(data => console.log(data))
+                                    .catch(error => console.error("Error:", error));
+                            };
+
+                            // Add event listeners to trigger data send
+                            button.addEventListener("click", () => {
+                                const isSelected = div.classList.toggle('selected');
+                                if (!isSelected) {
+                                    select.value = "none";
+                                }
+                                sendData();
+                            });
+                            select.addEventListener("change", sendData);
+                            colorInput.addEventListener("change", sendData);
+                        });
+                    }
+                } catch (error) {
+                    filePreview.textContent = "Error connecting to the server.";
+                }
+            } else {
+                filePreview.textContent = "Invalid file type. Please upload a GDS file.";
+                svgDisplay.innerHTML = "";
+            }
+        });
+        function view_GDS() {
+            const svgDisplay = document.getElementById('svg-display');
+            const displayImages = document.getElementById('displayimages');
+
+            // Clear previous state
+            displayImages.classList.add('hidden');
+            svgDisplay.classList.remove('hidden');
+            svgDisplay.innerHTML = '';
+
+            const gdsFile = document.getElementById('file-input').files[0]?.name;
+            if (!gdsFile) {
+                console.error('No file selected');
+                return;
+            }
+
+            fetch('/view_gds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gds_file: gdsFile }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.error);
+
+                    // Create container for image controls
+                    const container = document.createElement('div');
+                    container.className = 'image-container';
+                    svgDisplay.appendChild(container);
+
+                    // Initialize with loading state
+                    const loader = document.createElement('div');
+                    loader.textContent = 'Loading...';
+                    container.appendChild(loader);
+
+                    // Create image element
+                    const img = new Image();
+                    img.onload = () => {
+                        container.removeChild(loader);
+                        setupInteractiveView(img, data.svg_url, svgDisplay); // Pass svgDisplay instead of container
+                    };
+                    img.onerror = () => {
+                        container.removeChild(loader);
+                        console.error('Failed to load image');
+                    };
+                    img.src = `${data.svg_url}?t=${new Date().getTime()}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    svgDisplay.innerHTML = `<p class="error">${error.message}</p>`;
+                });
+        }
+
+        function setupInteractiveView(img, svgUrl, svgDisplay) {
+            // Clear previous content
+            svgDisplay.innerHTML = '';
+
+            // Create canvas element
+            const canvas = document.createElement('canvas');
+            canvas.className = 'svg-canvas';
+            svgDisplay.appendChild(canvas);
+
+            // Create reset button
+            const resetButton = document.createElement('button');
+            resetButton.id = 'resetButton5';
+            resetButton.textContent = 'Reset Zoom';
+            svgDisplay.appendChild(resetButton);
+
+            // Setup dimensions and drawing context
+            const ctx = canvas.getContext('2d');
+            let srcX = 0, srcY = 0, srcWidth = img.naturalWidth, srcHeight = img.naturalHeight;
+
+            // Add a flag to track if the Alt key is pressed
+            let isAltKeyPressed = false;
+
+            // Listen for Alt key press and release
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Alt') {
+                    isAltKeyPressed = true;
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Alt') {
+                    isAltKeyPressed = false;
+                }
+            });
+
+            // Set initial canvas dimensions
+            const setCanvasDimensions = () => {
+                // Get svgDisplay container dimensions
+                const svgDisplayWidth = svgDisplay.clientWidth;
+                const svgDisplayHeight = svgDisplay.clientHeight;
+
+                // Set canvas dimensions to 90% of svgDisplay width and height
+                const maxCanvasWidth = svgDisplayWidth * 0.9;
+                const maxCanvasHeight = svgDisplayHeight * 0.9;
+
+                // Calculate aspect ratio of the image
+                const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+                // Calculate canvas dimensions while maintaining aspect ratio
+                let canvasWidth, canvasHeight;
+                if (maxCanvasWidth / maxCanvasHeight > aspectRatio) {
+                    // svgDisplay is wider than the image aspect ratio
+                    canvasHeight = maxCanvasHeight;
+                    canvasWidth = canvasHeight * aspectRatio;
+                } else {
+                    // svgDisplay is taller than the image aspect ratio
+                    canvasWidth = maxCanvasWidth;
+                    canvasHeight = canvasWidth / aspectRatio;
+                }
+
+                // Set canvas dimensions
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                // Apply styles to the canvas
+                canvas.style.width = `${canvasWidth}px`;
+                canvas.style.height = `${canvasHeight}px`;
+
+                // Center the canvas horizontally
+                canvas.style.marginLeft = `${(svgDisplayWidth - canvasWidth) / 2}px`;
+
+                // Draw the initial view
+                draw();
+            };
+
+            // Function to draw the current view onto the canvas
+            const draw = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(
+                    img,
+                    srcX, srcY, srcWidth, srcHeight,
+                    0, 0, canvas.width, canvas.height
+                );
+            };
+
+            // Set initial canvas dimensions
+            setCanvasDimensions();
+
+            // Update canvas dimensions on window resize
+            window.addEventListener('resize', setCanvasDimensions);
+
+            // Mouse handling
+            let isDragging = false;
+            let startX, startY;
+
+            const getMousePos = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            };
+
+            canvas.addEventListener('mousedown', e => {
+                const pos = getMousePos(e);
+                startX = pos.x;
+                startY = pos.y;
+                isDragging = true;
+            });
+
+            canvas.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                const pos = getMousePos(e);
+
+                // Draw selection rectangle
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                draw();
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+            });
+
+            canvas.addEventListener('mouseup', e => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                const pos = getMousePos(e);
+                const [selX1, selX2] = [Math.min(startX, pos.x), Math.max(startX, pos.x)];
+                const [selY1, selY2] = [Math.min(startY, pos.y), Math.max(startY, pos.y)];
+                const selWidth = selX2 - selX1;
+                const selHeight = selY2 - selY1;
+
+                if (selWidth > 10 && selHeight > 10) { // Minimum selection size
+                    const ratioX = selX1 / canvas.width;
+                    const ratioY = selY1 / canvas.height;
+                    const ratioW = selWidth / canvas.width;
+                    const ratioH = selHeight / canvas.height;
+
+                    if (isAltKeyPressed) {
+                        // Zoom out when Alt key is pressed
+                        const zoomOutFactor = 2; // Zoom out by a factor of 2
+                        srcX = srcX - (ratioX * srcWidth * zoomOutFactor);
+                        srcY = srcY - (ratioY * srcHeight * zoomOutFactor);
+                        srcWidth = srcWidth * zoomOutFactor;
+                        srcHeight = srcHeight * zoomOutFactor;
+
+                        // Ensure we don't zoom out beyond the original image size
+                        srcX = Math.max(0, srcX);
+                        srcY = Math.max(0, srcY);
+                        srcWidth = Math.min(img.naturalWidth, srcWidth);
+                        srcHeight = Math.min(img.naturalHeight, srcHeight);
+                    } else {
+                        // Normal zoom-in behavior
+                        srcX = srcX + ratioX * srcWidth;
+                        srcY = srcY + ratioY * srcHeight;
+                        srcWidth = srcWidth * ratioW;
+                        srcHeight = srcHeight * ratioH;
+                    }
+
+                    draw();
+                }
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    draw();
+                }
+            });
+
+            // Reset functionality
+            resetButton.addEventListener('click', () => {
+                srcX = 0;
+                srcY = 0;
+                srcWidth = img.naturalWidth;
+                srcHeight = img.naturalHeight;
+                draw();
+            });
+        }
+
+        // JavaScript
+        function processGDS() {
+            // Show/hide elements
+            document.getElementById('displayimages').classList.remove('hidden');
+            document.getElementById('displayimage').classList.remove('hidden');
+            document.getElementById('displaymyimage').classList.add('hidden');
+            document.getElementById('svg-display').classList.add('hidden');
+            document.querySelector('.maindiv').classList.add('hidden');
+
+            // Get image containers
+            const image1 = document.getElementById('original');
+            const image2 = document.getElementById('fft1');
+            const image3 = document.getElementById('aerial');
+
+            // Clear previous content
+            image1.innerHTML = '';
+            image2.innerHTML = '';
+            image3.innerHTML = '';
+
+            // Prepare form data
+            let formData = new FormData();
+            formData.append("gdsfile", document.getElementById('file-input').files[0]);
+            formData.append("wavelength", document.getElementById('wavelength').value);
+            formData.append("numerical_aperture", document.getElementById('NA').value);
+            formData.append("layer", document.getElementById('fftlayer').value);
+            formData.append("datatype", document.getElementById('fftdatatype').value);
+
+            // Fetch and process
+            fetch("/process", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.error) {
+                        alert("Error: " + result.error);
+                    } else {
+                        setupInteractiveImage('original_mask', 'resetButton2', image1, result.images.original_mask);
+                        setupInteractiveImage('fft_mask', 'resetButton3', image2, result.images.fft_mask);
+                        setupInteractiveImage('aerial_image', 'resetButton4', image3, result.images.aerial_image);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        function setupInteractiveImage(imageId, buttonId, container, imageUrl) {
+            // Create hidden image element
+            const img = document.createElement('img');
+            img.id = imageId;
+            img.style.display = 'none';
+            container.appendChild(img);
+
+            // Create reset button
+            const resetButtonDiv = document.createElement('div');
+            resetButtonDiv.className = `reset-button`;
+            resetButtonDiv.innerHTML = `<button id="${buttonId}">Reset Zoom</button>`;
+            container.appendChild(resetButtonDiv);
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.className = 'zoom-canvas';
+            container.appendChild(canvas);
+
+            // Set image source
+            img.src = `${imageUrl}?t=${new Date().getTime()}`;
+
+            // Initialize zoom functionality
+            interactiveZoom(imageId, buttonId, canvas, container);
+        }
+
+        function interactiveZoom(imageId, buttonId, canvas, container) {
+            const img = document.getElementById(imageId);
+            const ctx = canvas.getContext('2d');
+            let srcX = 0, srcY = 0, srcWidth, srcHeight;
+            let isDragging = false;
+            let startX, startY;
+            const zoomOutFactor = 2; // Define zoom factor here
+
+            const setCanvasDimensions = () => {
+                // Use 90% of container dimensions
+                const containerWidth = container.clientWidth * 0.9;
+                const containerHeight = container.clientHeight * 0.9;
+
+                // Maintain aspect ratio
+                const imgAspect = img.naturalWidth / img.naturalHeight;
+                const containerAspect = containerWidth / containerHeight;
+
+                if (imgAspect > containerAspect) {
+                    // Width-bound
+                    canvas.width = containerWidth;
+                    canvas.height = containerWidth / imgAspect;
+                } else {
+                    // Height-bound
+                    canvas.height = containerHeight;
+                    canvas.width = containerHeight * imgAspect;
+                }
+
+                // Apply CSS dimensions
+                canvas.style.width = `${canvas.width}px`;
+                canvas.style.height = `${canvas.height}px`;
+            };
+
+            img.onload = function () {
+                srcWidth = img.naturalWidth;
+                srcHeight = img.naturalHeight;
+                setCanvasDimensions();
+                draw();
+
+                // Add resize handler
+                window.addEventListener('resize', () => {
+                    setCanvasDimensions();
+                    draw();
+                });
+            };
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(
+                    img,
+                    srcX, srcY, srcWidth, srcHeight,
+                    0, 0, canvas.width, canvas.height
+                );
+            }
+
+            // Mouse handling
+            function getMousePos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+
+            canvas.addEventListener('mousedown', e => {
+                const pos = getMousePos(e);
+                startX = pos.x;
+                startY = pos.y;
+                isDragging = true;
+            });
+
+            canvas.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                const pos = getMousePos(e);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                draw();
+
+                // Draw selection rectangle
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+            });
+
+            let isAltKeyPressed = false;
+            document.addEventListener('keydown', (e) => e.key === 'Alt' && (isAltKeyPressed = true));
+            document.addEventListener('keyup', (e) => e.key === 'Alt' && (isAltKeyPressed = false));
+
+            canvas.addEventListener('mouseup', e => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                const pos = getMousePos(e);
+                const [selX1, selX2] = [Math.min(startX, pos.x), Math.max(startX, pos.x)];
+                const [selY1, selY2] = [Math.min(startY, pos.y), Math.max(startY, pos.y)];
+                const selWidth = selX2 - selX1;
+                const selHeight = selY2 - selY1;
+
+                if (selWidth > 10 && selHeight > 10) {
+                    const ratioX = selX1 / canvas.width;
+                    const ratioY = selY1 / canvas.height;
+                    const ratioW = selWidth / canvas.width;
+                    const ratioH = selHeight / canvas.height;
+
+                    if (isAltKeyPressed) {
+                        // Zoom out
+                        srcX = Math.max(0, srcX - (ratioX * srcWidth * zoomOutFactor));
+                        srcY = Math.max(0, srcY - (ratioY * srcHeight * zoomOutFactor));
+                        srcWidth = Math.min(img.naturalWidth, srcWidth * zoomOutFactor);
+                        srcHeight = Math.min(img.naturalHeight, srcHeight * zoomOutFactor);
+                    } else {
+                        // Zoom in
+                        srcX += ratioX * srcWidth;
+                        srcY += ratioY * srcHeight;
+                        srcWidth *= ratioW;
+                        srcHeight *= ratioH;
+                    }
+
+                    draw();
+                }
+            });
+
+            // Reset functionality
+            document.getElementById(buttonId).addEventListener('click', () => {
+                srcX = 0;
+                srcY = 0;
+                srcWidth = img.naturalWidth;
+                srcHeight = img.naturalHeight;
+                draw();
+            });
+        }
+        function hideGDS() {
+            document.getElementById('displayimages').classList.remove('hidden');
+            document.getElementById('displayimage').classList.remove('hidden');
+            document.getElementById('displaymyimage').classList.add('hidden');
+            document.getElementById('svg-display').classList.add('hidden');
+            document.querySelector('.maindiv').classList.add('hidden');
+
+        }
+        function hideImage() {
+            document.getElementById('displayimages').classList.add('hidden');
+            document.getElementById('displaymyimage').classList.add('hidden');
+            document.querySelector('.maindiv').classList.remove('hidden');
+            document.getElementById('displayimage').classList.remove('hidden');
+            document.getElementById('svg-display').classList.remove('hidden');
+            document.getElementById('svgfile').classList.remove('hidden');
+
+        }
+        function showGDS() {
+            document.getElementById('displayimages').classList.add('hidden');
+            document.getElementById('displayimage').classList.add('hidden');
+            document.getElementById('svg-display').classList.add('hidden');
+            document.getElementById('displaymyimage').classList.remove('hidden');
+            document.querySelector('.maindiv').classList.add('hidden');
+
+            const div1 = document.getElementById('displaymyimage');
+            const fileshow = document.getElementById('fileshow');
+            const gdsFile = document.getElementById('file-input').files[0].name;
+            const layer = document.getElementById('fftlayer').value;
+            const datatype = document.getElementById('fftdatatype').value;
+
+            fetch('/show_gds', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ gds_file: gdsFile, layer: layer, datatype: datatype }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                        return;
+                    }
+
+                    // Clear previous content
+                    div1.innerHTML = '';
+                    const div = document.createElement('div');
+                    div.className = 'myimage';
+                    div.id = "myimage";
+
+                    // Create a new image element
+                    div.innerHTML = `<img src="${data.svg_url}&t=${new Date().getTime()}" alt="Generated SVG" id="myimage1" style="display:none;">`;
+
+                    // Create a div for the reset button
+                    const button_div_myimage = document.createElement('div');
+                    button_div_myimage.className = 'button_div_myimage';
+                    button_div_myimage.id = 'button_div_myimage';
+                    button_div_myimage.innerHTML = `<button id="resetButton1">Reset Zoom</button>`;
+                    div.appendChild(button_div_myimage);
+
+                    // Append the new image to the display div
+                    div1.appendChild(div);
+                    fileshow.appendChild(div1);
+
+                    // Create and append a canvas for zooming/selection
+                    const canvas = document.createElement('canvas');
+                    canvas.id = 'canvas';
+                    div.appendChild(canvas);
+
+                    // Get reference to the hidden image and setup canvas context
+                    const img = document.getElementById('myimage1');
+                    const ctx = canvas.getContext('2d');
+
+                    // Variables to track the current view (source rectangle)
+                    let srcX = 0, srcY = 0, srcWidth, srcHeight;
+
+                    // When the image loads, set up canvas dimensions and draw the image
+                    img.onload = function () {
+                        // Get the container dimensions
+                        const containerHeight = div1.clientHeight;
+
+                        // Set image height to 90% of container height
+                        const imgHeight = containerHeight * 0.9;
+
+                        // Calculate the width based on the image's natural aspect ratio
+                        const aspectRatio = img.naturalWidth / img.naturalHeight;
+                        const imgWidth = imgHeight * aspectRatio;
+
+                        // Ensure the width is 90% of the height (if needed)
+                        const targetWidth = imgHeight * 0.9;
+                        if (imgWidth > targetWidth) {
+                            // If the calculated width exceeds 90% of height, adjust height instead
+                            const adjustedHeight = targetWidth / aspectRatio;
+                            canvas.width = targetWidth;
+                            canvas.height = adjustedHeight;
+                        } else {
+                            // Otherwise, use the calculated width and height
+                            canvas.width = imgWidth;
+                            canvas.height = imgHeight;
+                        }
+
+                        // Set source dimensions to the natural size of the image
+                        srcWidth = img.naturalWidth;
+                        srcHeight = img.naturalHeight;
+
+                        // Apply styles to the canvas
+                        canvas.style.width = `${canvas.width}px`;
+                        canvas.style.height = `${canvas.height}px`;
+
+                        // Center the canvas horizontally
+                        canvas.style.marginLeft = `${(div1.clientWidth - canvas.width) / 2}px`;
+
+                        // Draw the initial view
+                        drawCurrentView();
+                    };
+
+                    // Function to draw the current view onto the canvas
+                    function drawCurrentView() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, canvas.width, canvas.height);
+                    }
+
+                    // Variables for selection coordinates and dragging state
+                    let startX, startY;
+                    let isDragging = false;
+
+                    // Helper to get mouse position relative to canvas
+                    function getMousePos(e) {
+                        const rect = canvas.getBoundingClientRect();
+                        return {
+                            x: e.clientX - rect.left,
+                            y: e.clientY - rect.top
+                        };
+                    }
+
+                    // Mouse events for selection and zoom
+                    canvas.addEventListener('mousedown', function (e) {
+                        const pos = getMousePos(e);
+                        startX = pos.x;
+                        startY = pos.y;
+                        isDragging = true;
+                    });
+
+                    canvas.addEventListener('mousemove', function (e) {
+                        if (!isDragging) return;
+                        const pos = getMousePos(e);
+                        // Redraw current view and show the selection rectangle
+                        drawCurrentView();
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'red';
+                        ctx.lineWidth = 2;
+                        const width = pos.x - startX;
+                        const height = pos.y - startY;
+                        ctx.rect(startX, startY, width, height);
+                        ctx.stroke();
+                    });
+                    let isAltKeyPressed = false;
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Alt') {
+                            isAltKeyPressed = true;
+                        }
+                    });
+
+                    document.addEventListener('keyup', (e) => {
+                        if (e.key === 'Alt') {
+                            isAltKeyPressed = false;
+                        }
+                    });
+
+                    canvas.addEventListener('mouseup', function (e) {
+                        if (!isDragging) return;
+                        isDragging = false;
+                        const pos = getMousePos(e);
+
+                        // Calculate selection in canvas coordinates
+                        const selX = Math.min(startX, pos.x);
+                        const selY = Math.min(startY, pos.y);
+                        const selWidth = Math.abs(pos.x - startX);
+                        const selHeight = Math.abs(pos.y - startY);
+
+                        if (selWidth && selHeight) {
+                            // Map the selection rectangle to the currently displayed image portion (source rectangle)
+                            const ratioX = selX / canvas.width;
+                            const ratioY = selY / canvas.height;
+                            const ratioWidth = selWidth / canvas.width;
+                            const ratioHeight = selHeight / canvas.height;
+
+                            if (isAltKeyPressed) {
+                                // Zoom out when Alt key is pressed
+                                const zoomOutFactor = 2; // Zoom out by a factor of 2
+                                srcX = srcX - (ratioX * srcWidth * zoomOutFactor);
+                                srcY = srcY - (ratioY * srcHeight * zoomOutFactor);
+                                srcWidth = srcWidth * zoomOutFactor;
+                                srcHeight = srcHeight * zoomOutFactor;
+
+                                // Ensure we don't zoom out beyond the original image size
+                                srcX = Math.max(0, srcX);
+                                srcY = Math.max(0, srcY);
+                                srcWidth = Math.min(img.naturalWidth, srcWidth);
+                                srcHeight = Math.min(img.naturalHeight, srcHeight);
+                            } else {
+                                // Normal zoom-in behavior
+                                srcX = srcX + ratioX * srcWidth;
+                                srcY = srcY + ratioY * srcHeight;
+                                srcWidth = srcWidth * ratioWidth;
+                                srcHeight = srcHeight * ratioHeight;
+                            }
+
+                            drawCurrentView();
+                        }
+                    });
+
+                    canvas.addEventListener('mouseleave', function () {
+                        if (isDragging) {
+                            isDragging = false;
+                            drawCurrentView();
+                        }
+                    });
+
+                    // Reset the zoom to the original full image
+                    const resetButton = document.getElementById('resetButton1');
+                    resetButton.addEventListener('click', function () {
+                        srcX = 0;
+                        srcY = 0;
+                        srcWidth = img.naturalWidth;
+                        srcHeight = img.naturalHeight;
+                        drawCurrentView();
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert("An error occurred. Please check the console for details.");
+                });
+        }
+
+        window.onload = function () {
+            document.getElementById('displaymyimage').classList.add('hidden')
+            document.getElementById('displayimages').classList.add('hidden');
+
+        };
+    </script>
+</body>
+
+</html>
