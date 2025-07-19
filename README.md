@@ -18,10 +18,13 @@ GDSII File Upload: Parse and process input GDSII layout files.
 Lithography is the process of transferring patterns of geometric shapes in a mask to a thin layer of radiation-sensitive material (called resist) covering the surface of a semiconductor wafer.
 
 # GUI (Graphical User Interface) for ComputLitho
+
 <img width="2092" height="1158" alt="image" src="https://github.com/user-attachments/assets/f127c706-e03a-4200-88fe-be67aa6fd27b" />
 # Web App Architecture
+
 <img width="2635" height="1262" alt="image" src="https://github.com/user-attachments/assets/2450b3a7-adb6-4c92-b3b3-4242cd990cf7" />
 # File Handling
+
 Each layer of a GDS File represents a specific fabrication step or material in semiconductor manufacturing.
 Each layer has its own datatype.
 In a GDS file, the datatype is an additional identifier assigned to a shape within a layer, used to further classify shapes that belong to the same layer.
