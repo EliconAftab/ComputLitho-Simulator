@@ -14,3 +14,4 @@ GDSII File Upload: Parse and process input GDSII layout files.
 🖥️ Web Interface: User-friendly Flask UI to run simulations and view results interactively.
 
 
+<img width="348" height="227" alt="image" src="https://github.com/user-attachments/assets/f8e297e6-43ee-457b-98a4-dbe508173440" />
